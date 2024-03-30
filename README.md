@@ -6,5 +6,9 @@ cmake . && make --jobs
 ```
 
 ## To run
-```./matrix```
+```
+./matrix
+```
 
+## Screenshot
+![Alt text](screenshot/matrix.png?raw=true "Matrix screenshot")
