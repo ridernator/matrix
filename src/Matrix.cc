@@ -10,6 +10,8 @@
 
 namespace matrix {
     Matrix::Matrix() {
+        std::srand(std::time(nullptr));
+
         initscr();
         raw();
         keypad(stdscr, TRUE);
@@ -87,7 +89,9 @@ namespace matrix {
             }), drops.end());
 
             if (drops.size() < getmaxx(stdscr) * 0.75) {
-                drops.push_back(new Drop(((rand() * 0.8) / (double) RAND_MAX) + 0.2, rand() % 100, rand() % getmaxx(stdscr)));
+                drops.push_back(new Drop(((std::rand() * 0.8) / (double) RAND_MAX) + 0.2,
+                                         std::rand() % 100,
+                                         std::rand() % getmaxx(stdscr)));
             }
 
             std::this_thread::sleep_until(wakeTime);
