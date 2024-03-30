@@ -2,8 +2,8 @@
 #include "Drop.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdlib>
-#include <cstring>
 #include <ncurses.h>
 #include <chrono>
 #include <thread>
@@ -46,18 +46,16 @@ namespace matrix {
 
         while (true) {
             for (Drop* drop : drops) {
-                char* chars = drop->getChars();
-
-                for (int index = 0; index < (int) strlen(chars); ++index) {
-                    if (index == 1) {
-                    }
-
-                    if (drop->getY() - index >= 0) {
+                for (uint8_t index = 0; index < drop->getLength(); ++index) {
+                    if (drop->getY() >= index) {
                         if (index == 0) {
                             attron(COLOR_PAIR(DROP_START_COLOUR));
                         }
 
-                        mvaddch(drop->getY() - index, drop->getX(), chars[index]);
+                        mvaddch(drop->getY() - index,
+                                drop->getX(),
+                                drop->getChars()[drop->getStartIndex() >= index ? drop->getStartIndex() - index :
+                                                                                  drop->getLength() - (index - drop->getStartIndex())]);
 
                         if (index == 0) {
                             attron(COLOR_PAIR(DROP_COLOUR));
@@ -67,7 +65,9 @@ namespace matrix {
                     }
                 }
 
-                mvaddch(drop->getY() - (int) strlen(chars), drop->getX(), ' ');
+                mvaddch(drop->getY() - drop->getLength(), drop->getX(), ' ');
+
+                drop->increment();
             }
 
             refresh();
@@ -77,9 +77,7 @@ namespace matrix {
             }
 
             drops.erase(std::remove_if(drops.begin(), drops.end(), [] (Drop* drop) {
-                drop->increment();
-
-                if (drop->getY() - (int) strlen(drop->getChars()) > getmaxy(stdscr)) {
+                if (drop->getY() - drop->getLength() > getmaxy(stdscr)) {
                     delete drop;
 
                     return true;
@@ -88,9 +86,9 @@ namespace matrix {
                 }
             }), drops.end());
 
-            if (drops.size() < getmaxx(stdscr) * 0.75) {
-                drops.push_back(new Drop(((std::rand() * 0.8) / (double) RAND_MAX) + 0.2,
-                                         std::rand() % 100,
+            while (drops.size() < getmaxx(stdscr) * 0.9) {
+                drops.push_back(new Drop(((std::rand() * 0.9) / (double) RAND_MAX) + 0.1,
+                                         (std::rand() % getmaxy(stdscr)) + 1,
                                          std::rand() % getmaxx(stdscr)));
             }
 

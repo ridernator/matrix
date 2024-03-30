@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 namespace matrix {
@@ -13,11 +14,15 @@ namespace matrix {
 
             char* getChars();
 
-            uint8_t getX();
+            uint8_t getX() const;
 
-            uint8_t getY();
+            uint8_t getY() const;
 
             void increment();
+
+            std::size_t getStartIndex() const;
+
+            uint8_t getLength() const;
 
         private:
             const double speed;
@@ -27,5 +32,7 @@ namespace matrix {
             double yPos;
 
             char* chars;
+
+            const uint8_t length;
     };
 }
