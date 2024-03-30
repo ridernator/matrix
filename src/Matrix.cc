@@ -5,7 +5,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <ncurses.h>
-#include <unistd.h>
+#include <chrono>
+#include <thread>
 
 namespace matrix {
     Matrix::Matrix() {
@@ -39,6 +40,8 @@ namespace matrix {
     }
 
     void Matrix::mainLoop() {
+        auto wakeTime = std::chrono::steady_clock::now() + FRAME_TIME;
+
         while (true) {
             for (Drop* drop : drops) {
                 char* chars = drop->getChars();
@@ -71,8 +74,6 @@ namespace matrix {
                 break;
             }
 
-            usleep(50000);
-
             drops.erase(std::remove_if(drops.begin(), drops.end(), [] (Drop* drop) {
                 drop->increment();
 
@@ -88,6 +89,10 @@ namespace matrix {
             if (drops.size() < getmaxx(stdscr) * 0.75) {
                 drops.push_back(new Drop(((rand() * 0.8) / (double) RAND_MAX) + 0.2, rand() % 100, rand() % getmaxx(stdscr)));
             }
+
+            std::this_thread::sleep_until(wakeTime);
+
+            wakeTime += FRAME_TIME;
         }
     }
 }
