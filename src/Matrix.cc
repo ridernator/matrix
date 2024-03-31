@@ -45,6 +45,8 @@ namespace matrix {
         auto wakeTime = std::chrono::steady_clock::now() + FRAME_TIME;
 
         while (true) {
+            erase();
+
             for (Drop* drop : drops) {
                 for (uint8_t index = 0; index < drop->getLength(); ++index) {
                     if (drop->getY() >= index) {
@@ -64,8 +66,6 @@ namespace matrix {
                         break;
                     }
                 }
-
-                mvaddch(drop->getY() - drop->getLength(), drop->getX(), ' ');
 
                 drop->increment();
             }
@@ -87,7 +87,7 @@ namespace matrix {
             }), drops.end());
 
             while (drops.size() < getmaxx(stdscr) * 0.9) {
-                drops.push_back(new Drop(((std::rand() * 0.9) / (double) RAND_MAX) + 0.1,
+                drops.push_back(new Drop(std::rand() / (double) (RAND_MAX / 4),
                                          (std::rand() % getmaxy(stdscr)) + 1,
                                          std::rand() % getmaxx(stdscr)));
             }
